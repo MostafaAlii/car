@@ -18,6 +18,7 @@ class CarsCaption extends Model
         'category_car_id',
         'number_car',
         'color_car',
+        'year_car',
         'car_photo_before',
         'car_photo_behind',
         'car_photo_right',
