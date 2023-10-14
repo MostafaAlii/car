@@ -15,6 +15,7 @@ return new class extends Migration {
             $table->foreignId('category_car_id')->nullable()->constrained('category_cars')->cascadeOnDelete()->cascadeOnUpdate();
             $table->string('number_car')->nullable();
             $table->string('color_car')->nullable();
+            $table->year('year_car')->nullable();
             $table->string('car_photo_before')->nullable()->comment('صوره السياره امام');
             $table->string('car_photo_behind')->nullable()->comment('صوره السياره خلف');
             $table->string('car_photo_right')->nullable()->comment('صوره السياره يمين');
