@@ -33,66 +33,6 @@ class CaptainProfileController extends Controller
         }
     }
 
-    /*public function uploadProfile(Request $request) {
-        try {
-            $user = auth('captain-api')->user();
-            if (!$user)
-                return $this->errorResponse('Sorry, you are not allowed', 403);
-            $numberPersonal = $request->input('number_personal');
-            if ($numberPersonal) 
-                $user->profile->update(['number_personal' => $numberPersonal]);
-            $carData = [
-                'captain_id' => $user->id,
-                'car_make_id' => $request->input('car_make_id'),
-                'car_model_id' => $request->input('car_model_id'),
-                'car_type_id' => $request->input('car_type_id'),
-                'number_car' => $request->input('number_car'),
-                'color_car' => $request->input('color_car'),
-                'year_car' => $request->input('year_car'),
-            ];
-            if (!empty($carData)) {
-                CarsCaption::create($carData);
-            }
-            $allowedPersonalImageTypes = [
-                'personal_avatar',
-                'id_photo_front',
-                'id_photo_back',
-                'criminal_record',
-                'captain_license_front',
-                'captain_license_back',
-            ];
-            $allowedCarImageTypes = [
-                'car_license_front',
-                'car_license_back',
-                'car_front',
-                'car_back',
-                'car_right',
-                'car_left',
-                'car_inside',
-            ];
-            $imageType = $request->input('type');
-            if ($imageType === 'personal') {
-                foreach ($allowedPersonalImageTypes as $imageField) {
-                    if ($request->hasFile($imageField)) {
-                        $this->storeImage($request, $imageField,$imageType,  $user);
-
-                    }
-                }
-            } elseif ($imageType === 'car') {
-                foreach ($allowedCarImageTypes as $imageField) {
-                    if ($request->hasFile($imageField)) {
-                        $this->storeImage($request, $imageField, $imageType, $user);
-                    }
-                }
-            } else {
-                return $this->errorResponse('Invalid image type', 400);
-            }
-    
-            return $this->successResponse('Upload Profile Media Successfully for ' . $user->name);
-        } catch (\Exception $e) {
-            return $this->errorResponse('An error occurred while uploading the profile media: ' . $e->getMessage());
-        }
-    }*/
     public function uploadProfile(Request $request) {
         try {
             $user = auth('captain-api')->user();
@@ -101,35 +41,24 @@ class CaptainProfileController extends Controller
             $numberPersonal = $request->input('number_personal');
             if ($numberPersonal)
                 $user->profile->update(['number_personal' => $numberPersonal]);
-            $carTypeExists = CarType::whereId($request->input('car_type_id'))->exists();
-            $carMakeExists = CarMake::whereId($request->input('car_make_id'))->exists();
-            $carModelExists = CarModel::whereId($request->input('car_model_id'))->exists();
-    
-            if ($carTypeExists && $carMakeExists && $carModelExists) {
-                $carData = [
-                    'captain_id' => $user->id,
-                    'car_make_id' => $request->input('car_make_id'),
-                    'car_model_id' => $request->input('car_model_id'),
-                    'car_type_id' => $request->input('car_type_id'),
-                    'number_car' => $request->input('number_car'),
-                    'color_car' => $request->input('color_car'),
-                    'year_car' => $request->input('year_car'),
-                ];
-                if (!empty($carData)){
-                    CarsCaption::updateOrInsert(
-                        [
-                            'captain_id' => $user->id,
-                            'car_make_id' => $carData['car_make_id'],
-                            'car_model_id' => $carData['car_model_id'],
-                            'car_type_id' => $carData['car_type_id']
-                        ],
-                        $carData
-                    );
-                }
-                
-            } else {
-                return $this->errorResponse('Invalid car type, make, or model', 400);
+            $carData = [
+                'captain_id' => $user->id,
+                'number_car' => $request->input('number_car'),
+                'color_car' => $request->input('color_car'),
+                'year_car' => $request->input('year_car'),
+            ];
+            if ($request->input('car_make_id')) {
+                $carData['car_make_id'] = $request->input('car_make_id');
             }
+    
+            if ($request->input('car_model_id')) {
+                $carData['car_model_id'] = $request->input('car_model_id');
+            }
+    
+            if ($request->input('car_type_id')) {
+                $carData['car_type_id'] = $request->input('car_type_id');
+            }
+            CarsCaption::updateOrInsert(['captain_id' => $user->id,],$carData);
     
             $allowedPersonalImageTypes = [
                 'personal_avatar',
@@ -171,7 +100,6 @@ class CaptainProfileController extends Controller
             return $this->errorResponse('An error occurred while uploading the profile media: ' . $e->getMessage());
         }
     }
-    
     
     public function updateUploadProfile(Request $request) {
         try {
