@@ -108,9 +108,9 @@ class CaptainProfileController extends Controller
             if ($carTypeExists && $carMakeExists && $carModelExists) {
                 $carData = [
                     'captain_id' => $user->id,
-                    'car_make_id' => $request->input('car_make_id'),
-                    'car_model_id' => $request->input('car_model_id'),
-                    'car_type_id' => $request->input('car_type_id'),
+                    //'car_make_id' => $request->input('car_make_id'),
+                    //'car_model_id' => $request->input('car_model_id'),
+                    //'car_type_id' => $request->input('car_type_id'),
                     'number_car' => $request->input('number_car'),
                     'color_car' => $request->input('color_car'),
                     'year_car' => $request->input('year_car'),
@@ -119,9 +119,9 @@ class CaptainProfileController extends Controller
                     CarsCaption::updateOrInsert(
                         [
                             'captain_id' => $user->id,
-                            'car_make_id' => $carData['car_make_id'],
-                            'car_model_id' => $carData['car_model_id'],
-                            'car_type_id' => $carData['car_type_id']
+                            //'car_make_id' => $carData['car_make_id'],
+                            //'car_model_id' => $carData['car_model_id'],
+                            //'car_type_id' => $carData['car_type_id']
                         ],
                         $carData
                     );
