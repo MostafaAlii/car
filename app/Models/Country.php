@@ -5,7 +5,7 @@ use Illuminate\Database\Eloquent\Model;
 use Illuminate\Database\Eloquent\Factories\HasFactory;
 class Country extends Model {
     use HasFactory;
-    protected $fillable = ['name', 'status','code'];
+       protected $fillable = ['name', 'status','code','logo'];
 
     public function states() {
         return $this->hasMany(State::class, 'country_id');

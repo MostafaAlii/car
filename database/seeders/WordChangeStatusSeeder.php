@@ -15,16 +15,18 @@ class WordChangeStatusSeeder extends Seeder
      */
     public function run(): void
     {
-        $countyArray = ['Egypt', 'Iraq', 'Saudi Arabia', 'Algeria'];
+           $countyArray = ['Egypt', 'Iraq', 'Saudi Arabia', 'Algeria'];
         $codes = [20, 964, 966, 213];
-
+        $logos = ['assets/images/Eg.png','assets/images/Iraq.png','assets/images/SaudiArabia.png', 'assets/images/Algeria.png'];
         foreach ($countyArray as $index => $countryName) {
             $code = $codes[$index];
+            $logo = $logos[$index];
 
             Country::where('name', $countryName)
                 ->whereHas('states')
-                ->update(['status' => true, 'code' => $code]);
+                ->update(['status' => true, 'code' => $code, 'logo' => $logo]);
         }
+
 
         State::join('countries', 'states.country_id', '=', 'countries.id')
             ->where('countries.status', 1)

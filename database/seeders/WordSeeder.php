@@ -11,7 +11,9 @@ class WordSeeder extends Seeder {
     {
         Schema::disableForeignKeyConstraints();
         DB::table('countries')->truncate();
-
+        DB::table('states')->truncate();
+        DB::table('cities')->truncate();
+        
         $file_path = public_path('word.sql');
 
 

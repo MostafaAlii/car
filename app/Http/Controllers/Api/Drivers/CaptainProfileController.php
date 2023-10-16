@@ -6,21 +6,14 @@ use App\Models\Image;
 use Illuminate\Http\Request;
 use Illuminate\Support\Facades\DB;
 use App\Http\Controllers\Controller;
-use Illuminate\Support\Facades\Schema;
-use Illuminate\Support\Facades\Storage;
-use Illuminate\Support\Facades\Validator;
 use App\Services\Dashboard\Admins\CaptainService;
 use App\Models\Traits\Api\{ApiResponseTrait, ImageUploadTrait};
-use App\Models\{Captain, CaptainProfile, CarsCaption, CarsCaptionStatus, CarType,CarMake,CarModel};
+use App\Models\{Captain, CaptainProfile, CarsCaption, CarsCaptionStatus};
 use App\Http\Resources\Drivers\{CarsCaptionResources, CaptainProfileResources, CarsCaptionStatusResources};
 
-class CaptainProfileController extends Controller
-{
-
+class CaptainProfileController extends Controller {
     use ApiResponseTrait, ImageUploadTrait;
-
-    public function __construct(protected CaptainService $captainService)
-    {
+    public function __construct(protected CaptainService $captainService) {
         $this->captainService = $captainService;
     }
 
@@ -286,7 +279,6 @@ class CaptainProfileController extends Controller
         }
     }
     
-
     private function storeImage(Request $request, $field, $type, $imageable) {
         $image = new Image();
         $image->photo_type = $field;

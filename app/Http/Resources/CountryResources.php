@@ -19,6 +19,7 @@ class CountryResources extends JsonResource
             'name' => $this->name,
             'status' => $this->status,
             'code' => $this->code,
+            'logo' => asset($this->logo),
             'create_dates' => [
                 'created_at_human' => $this->created_at->diffForHumans(),
                 'created_at' => $this->created_at
