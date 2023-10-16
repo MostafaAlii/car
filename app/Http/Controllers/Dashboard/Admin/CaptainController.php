@@ -1,23 +1,14 @@
 <?php
-
 namespace App\Http\Controllers\Dashboard\Admin;
-
 use App\DataTables\Orders\OrderDataTable;
-use App\Models\Image;
-use App\Models\Captain;
 use Illuminate\Http\Request;
-use App\Models\CaptainProfile;
-use App\Models\CarsCaptionStatus;
+use App\Models\{CaptainProfile,CarsCaptionStatus,Captain,Image};
 use App\Http\Controllers\Controller;
-use Illuminate\Support\Facades\Storage;
-use App\Models\Traits\Api\ImageUploadTrait;
 use App\DataTables\Dashboard\Admin\CaptainDataTable;
 use App\Http\Requests\Dashboard\Admin\CaptionRequestValidation;
 use App\Services\Dashboard\{Admins\CaptainService, General\GeneralService};
 
-class CaptainController extends Controller
-{
-    use ImageUploadTrait;
+class CaptainController extends Controller {
 
     public function __construct(protected CaptainDataTable $dataTable, protected CaptainService $captainService, protected GeneralService $generalService)
     {
@@ -26,8 +17,7 @@ class CaptainController extends Controller
         $this->generalService = $generalService;
     }
 
-    public function index()
-    {
+    public function index() {
         $data = [
             'title' => 'Captions',
             'countries' => $this->generalService->getCountries(),
@@ -35,8 +25,7 @@ class CaptainController extends Controller
         return $this->dataTable->render('dashboard.admin.captains.index', compact('data'));
     }
 
-    public function store(CaptionRequestValidation $request)
-    {
+    public function store(CaptionRequestValidation $request) {
         try {
             $requestData = $request->validated();
             $this->captainService->create($requestData);
@@ -46,8 +35,7 @@ class CaptainController extends Controller
         }
     }
 
-    public function show($captainId)
-    {
+    public function show($captainId) {
         try {
             $data = [
                 'title' => 'Captain Details',
@@ -59,8 +47,7 @@ class CaptainController extends Controller
         }
     }
 
-    public function update(CaptionRequestValidation $request, $captainId)
-    {
+    public function update(CaptionRequestValidation $request, $captainId) {
         try {
             $requestData = $request->validated();
             $this->captainService->update($captainId, $requestData);
@@ -70,8 +57,7 @@ class CaptainController extends Controller
         }
     }
 
-    public function updatePassword(Request $request, $captainId)
-    {
+    public function updatePassword(Request $request, $captainId) {
         try {
             $this->captainService->updatePassword($captainId, $request->password);
             return redirect()->route('captains.index')->with('success', 'captain password updated successfully');
@@ -80,8 +66,7 @@ class CaptainController extends Controller
         }
     }
 
-    public function destroy($id)
-    {
+    public function destroy($id) {
         try {
             $this->captainService->delete($id);
             return redirect()->route('captains.index')->with('success', 'captain deleted successfully');
@@ -90,8 +75,7 @@ class CaptainController extends Controller
         }
     }
 
-    public function notifications($captainId)
-    {
+    public function notifications($captainId) {
         try {
             return $this->captainService->getNotifications($captainId);
         } catch (\Exception $e) {
@@ -99,29 +83,23 @@ class CaptainController extends Controller
         }
     }
 
-    public function uploadPersonalMedia(Request $request)
-    {
+    public function uploadPersonalMedia(Request $request) {
         if ($request->hasFile('personal_avatar'))
-            $this->storeImage($request, 'personal_avatar', $request->get('imageable_id'));
+            $this->storeImage($request, 'personal_avatar', $request->get('imageable_id'), $request->get('type'));
         if ($request->hasFile('id_photo_front'))
-            $this->storeImage($request, 'id_photo_front', $request->get('imageable_id'));
+            $this->storeImage($request, 'id_photo_front', $request->get('imageable_id'), $request->get('type'));
         if ($request->hasFile('id_photo_back'))
-            $this->storeImage($request, 'id_photo_back', $request->get('imageable_id'));
+            $this->storeImage($request, 'id_photo_back', $request->get('imageable_id'), $request->get('type'));
         if ($request->hasFile('criminal_record'))
-            $this->storeImage($request, 'criminal_record', $request->get('imageable_id'));
+            $this->storeImage($request, 'criminal_record', $request->get('imageable_id'), $request->get('type'));
         if ($request->hasFile('captain_license_front'))
-            $this->storeImage($request, 'captain_license_front', $request->get('imageable_id'));
+            $this->storeImage($request, 'captain_license_front', $request->get('imageable_id'), $request->get('type'));
         if ($request->hasFile('captain_license_back'))
-            $this->storeImage($request, 'captain_license_back', $request->get('imageable_id'));
-        if ($request->hasFile('car_license_front'))
-            $this->storeImage($request, 'car_license_front', $request->get('imageable_id'));
-        if ($request->hasFile('car_license_back'))
-            $this->storeImage($request, 'car_license_back', $request->get('imageable_id'));
-        return redirect()->back()->with('success', 'تم حفظ الصور بنجاح');
+            $this->storeImage($request, 'captain_license_back', $request->get('imageable_id'), $request->get('type'));
+        return redirect()->back()->with('success', 'Upload Personal Media Succesfully');
     }
 
-    private function storeImage(Request $request, $field, $imageable)
-    {
+    private function storeImage(Request $request, $field, $imageable, $type) {
         $image = new Image();
         $image->photo_type = $field;
         $image->imageable_type = 'App\Models\Captain';
@@ -131,7 +109,7 @@ class CaptainController extends Controller
             if ($captainProfile) {
                 $nameWithoutSpaces = str_replace(' ', '_', $imageable->name);
                 $request->file($field)->storeAs(
-                    $nameWithoutSpaces . '_' . $captainProfile->uuid . DIRECTORY_SEPARATOR,
+                    $nameWithoutSpaces . '_' . $captainProfile->uuid . DIRECTORY_SEPARATOR . $type . DIRECTORY_SEPARATOR,
                     $field . '.' . $request->file($field)->getClientOriginalExtension(),
                     'upload_image'
                 );
@@ -144,8 +122,7 @@ class CaptainController extends Controller
     }
 
 
-    public function uploadCarMedia(Request $request)
-    {
+    public function uploadCarMedia(Request $request) {
         try {
             $this->captainService->uploadCarMedia($request);
             return redirect()->back()->with('success', 'captain car media uploaded successfully');
@@ -154,35 +131,60 @@ class CaptainController extends Controller
         }
     }
 
-    public function updateStatus(Request $request, $id)
-    {
-
+    public function updatePersonalMediaStatus(Request $request, $id) {
         try {
-            $captainId = $request->input('captain_id');
-            $fieldName = $request->input('field_name');
-            $newStatus = $request->input('status');
-            $status = CarsCaptionStatus::findOrFail($id);
+            $columns = [
+                'personal_avatar' => [
+                    'ar'=> 'الصوره الشخصية',
+                    'en'=> 'personal avatar',
+                ],
+                'id_photo_front' => [
+                    'ar'=> 'صوره الهوية امام',
+                    'en'=> 'Nationality ID front',
+                ],
+                'id_photo_back' => [
+                    'ar'=> 'صوره الهوية خلف',
+                    'en'=> 'Nationality ID back',
+                ],
+                'criminal_record' => [
+                    'ar'=> 'السجل الجنائى',
+                    'en'=> 'Criminal Record',
+                ],
+                'captain_license_front' => [
+                    'ar'=> 'رخصة السائق امام',
+                    'en'=> 'captain license front',
+                ],
+                'captain_license_back' => [
+                    'ar'=> 'رخصة السائق خلف',
+                    'en'=> 'captain license back',
+                ],
+            ];
 
-            if ($newStatus === 'reject') {
-                $rejectReason = $request->input('reject_message');
-                $status->status = $newStatus;
-                $status->reject_message = $rejectReason;
-                $status->save();
-                sendNotificationCaptain($status->captain_profile->owner->fcm_token, 'reject', $status->reject_message);
-                return redirect()->back()->with('success', 'Captain media updated status successfully');
-            } else {
-                $status->status = $newStatus;
-                $status->save();
-                sendNotificationCaptain($status->captain_profile->owner->fcm_token, $newStatus, $status->status);
-                return redirect()->back()->with('success', 'Captain media updated status successfully');
-            }
+            $image = Image::find($id);
+            $captainId = $image->imageable_id;
+            $captain = Captain::findOrfail($captainId);
+            $specificName = array_key_exists($image->photo_type,$columns) ? $columns[$image->photo_type] : null;
+            if (!$image) 
+                return redirect()->back()->with('error', 'Image not found');
+            $updateData = [];
+            if ($request->has('photo_status'))
+                $updateData['photo_status'] = $request->input('photo_status');
+            
+            if ($request->has('reject_reson'))
+                $updateData['reject_reson'] = $request->input('reject_reson');
+            
+            $image->update($updateData);
+            $body = ($request->input('photo_status') === 'accept') ? 'Good Your ' . $specificName . ' Successfully' : 'Sorry this image ' .$specificName . 'was rejected to ' . ucfirst($image->reject_reson);
+            $title = ($request->input('photo_status') === 'accept') ? 'Accept ' . $specificName : 'Reject ' . $specificName;
+            sendNotificationCaptain($captain->fcm_token,$body, $title, false);
+            return redirect()->back()->with('success', 'Image ' . ucfirst(str_replace('_', ' ', $image->photo_type)) . ' updated status successfully');
         } catch (\Exception $e) {
-            return redirect()->back()->with('error', 'An error occurred while updating status');
+            return redirect()->back()->with('error', 'An error occurred during the update: ' . $e->getMessage());
         }
     }
+    
 
-    public function updateCarStatus(Request $request, $id)
-    {
+    public function updateCarStatus(Request $request, $id) {
         try {
             $captainId = $request->input('captain_id');
             $fieldName = $request->input('field_name');
@@ -208,8 +210,7 @@ class CaptainController extends Controller
         }
     }
 
-    public function updateActivityStatus(Request $request, $id)
-    {
+    public function updateActivityStatus(Request $request, $id) {
         try {
             $captain = Captain::findOrFail($id);
             $captain->captainActivity->status_captain_work = $request->input('status_captain_work');
@@ -220,8 +221,7 @@ class CaptainController extends Controller
         }
     }
 
-    public function sendNotificationAll(Request $request)
-    {
+    public function sendNotificationAll(Request $request) {
         try {
             sendNotificatioAll($request->type, $request->body, $request->title);
             return redirect()->route('captains.index')->with('success', 'Successfully Send Notifications');
@@ -232,8 +232,7 @@ class CaptainController extends Controller
         }
     }
 
-    public function sendNotification(Request $request)
-    {
+    public function sendNotification(Request $request) {
         try {
             sendNotificationCaptain($request->fcm_token_captain, $request->body, $request->title);
             return redirect()->route('captains.index')->with('success', 'Successfully Send Notifications');
@@ -244,8 +243,7 @@ class CaptainController extends Controller
         }
     }
 
-    public function getOrders(OrderDataTable $dataTable)
-    {
+    public function getOrders(OrderDataTable $dataTable) {
         return $dataTable->render('dashboard.admin.captains.Orders.orders',['caption_orders' => \request()->caption_orders]);
     }
 }

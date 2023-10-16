@@ -66,4 +66,8 @@ class Captain extends Authenticatable implements JWTSubject {
     {
         return $this->hasOne(CarsCaption::class,'captain_id');
     }
+
+    public function images() {
+        return $this->morphMany(Image::class, 'imageable');
+    }
 }
