@@ -133,9 +133,37 @@ class CaptainController extends Controller {
 
     public function updatePersonalMediaStatus(Request $request, $id) {
         try {
+            $columns = [
+                'personal_avatar' => [
+                    'ar'=> 'الصوره الشخصية',
+                    'en'=> 'personal avatar',
+                ],
+                'id_photo_front' => [
+                    'ar'=> 'صوره الهوية امام',
+                    'en'=> 'Nationality ID front',
+                ],
+                'id_photo_back' => [
+                    'ar'=> 'صوره الهوية خلف',
+                    'en'=> 'Nationality ID back',
+                ],
+                'criminal_record' => [
+                    'ar'=> 'السجل الجنائى',
+                    'en'=> 'Criminal Record',
+                ],
+                'captain_license_front' => [
+                    'ar'=> 'رخصة السائق امام',
+                    'en'=> 'captain license front',
+                ],
+                'captain_license_back' => [
+                    'ar'=> 'رخصة السائق خلف',
+                    'en'=> 'captain license back',
+                ],
+            ];
+
             $image = Image::find($id);
             $captainId = $image->imageable_id;
             $captain = Captain::findOrfail($captainId);
+            $specificName = array_key_exists($image->photo_type,$columns) ? $columns[$image->photo_type] : null;
             if (!$image) 
                 return redirect()->back()->with('error', 'Image not found');
             $updateData = [];
@@ -146,8 +174,8 @@ class CaptainController extends Controller {
                 $updateData['reject_reson'] = $request->input('reject_reson');
             
             $image->update($updateData);
-            $body = ($request->input('photo_status') === 'accept') ? 'Good Your ' . ucfirst(str_replace('_', ' ', $image->photo_type)) . ' Successfully' : 'Sorry this image ' .ucfirst(str_replace('_', ' ', $image->photo_type)) . 'was rejected to ' . ucfirst($image->reject_reson);
-            $title = ($request->input('photo_status') === 'accept') ? 'Accept ' . ucfirst(str_replace('_', ' ', $image->photo_type)) : 'Reject ' . ucfirst(str_replace('_', ' ', $image->photo_type));
+            $body = ($request->input('photo_status') === 'accept') ? 'Good Your ' . $specificName . ' Successfully' : 'Sorry this image ' .$specificName . 'was rejected to ' . ucfirst($image->reject_reson);
+            $title = ($request->input('photo_status') === 'accept') ? 'Accept ' . $specificName : 'Reject ' . $specificName;
             sendNotificationCaptain($captain->fcm_token,$body, $title, false);
             return redirect()->back()->with('success', 'Image ' . ucfirst(str_replace('_', ' ', $image->photo_type)) . ' updated status successfully');
         } catch (\Exception $e) {
