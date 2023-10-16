@@ -26,144 +26,150 @@
                                 </p>
                                 <p class="mb-0">From: {{$data['captain']?->country->name}}</p>
                                 <!-- Start Alert Div -->
-                                <div class="col-12 d-flex justify-content-center">
-                                    
-                                    <form method="POST" action="{{ route('captains.uploadMedia') }}" enctype="multipart/form-data">
-                                        @csrf
-                                        <input type="hidden" name="imageable_id" value="{{ $data['captain'] }}">
-                                        <div class="form-group">
-                                            <label for="personal_avatar">Personal Avatar</label>
-                                            <input type="file" name="personal_avatar" class="form-control">
-                                        </div>
-                                    
-                                        <div class="form-group">
-                                            <label for="id_photo_front">ID Photo Front</label>
-                                            <input type="file" name="id_photo_front" class="form-control">
-                                        </div>
+                                <div class="col-12 d-flex justify-content-center mt-3">
+                                    <!-- Start Personal Media Upload -->
+                                    <div class="col-xl-12 md-mt-30 mb-30">
+                                        <div class="card card-statistics mb-30">
+                                            <div class="card-body">
+                                                <h5 class="card-title">Personal Media</h5>
+                                                <form method="POST" action="{{ route('captains.uploadMedia') }}" enctype="multipart/form-data">
+                                                    @csrf
+                                                    <input type="hidden" name="imageable_id" value="{{ $data['captain'] }}">
+                                                    <input type="hidden" name="type" value="personal">
+                                                    <div class="row p-1">
+                                                        <div class="col-6">
+                                                            <div class="custom-file">
+                                                                <input type="file" class="custom-file-input" name="personal_avatar" id="personal_avatar" />
+                                                                <label class="custom-file-label" for="personal_avatar">Choose Presonal Avatar Image</label>
+                                                            </div>
+                                                        </div>
+                                                        <div class="col-6">
+                                                            <div class="custom-file">
+                                                                <input type="file" class="custom-file-input" name="id_photo_front" id="id_photo_front" />
+                                                                <label class="custom-file-label" for="id_photo_front">Choose ID Front Side Image</label>
+                                                            </div>
+                                                        </div>
+                                                    </div>
 
-                                        <div class="form-group">
-                                            <label for="id_photo_back">ID Photo Back</label>
-                                            <input type="file" name="id_photo_back" class="form-control">
-                                        </div>
+                                                    <div class="row p-1">
+                                                        <div class="col-6">
+                                                            <div class="custom-file">
+                                                                <input type="file" class="custom-file-input" name="id_photo_back" id="id_photo_back" />
+                                                                <label class="custom-file-label" for="id_photo_back">Choose ID Back Side Image Image</label>
+                                                            </div>
+                                                        </div>
+                                                        <div class="col-6">
+                                                            <div class="custom-file">
+                                                                <input type="file" class="custom-file-input" name="criminal_record" id="criminal_record" />
+                                                                <label class="custom-file-label" for="criminal_record">Choose Criminal Record Image</label>
+                                                            </div>
+                                                        </div>
+                                                    </div>
 
-                                        <div class="form-group">
-                                            <label for="criminal_record">Criminal Record</label>
-                                            <input type="file" name="criminal_record" class="form-control">
-                                        </div>
+                                                    <div class="row p-1">
+                                                        <div class="col-6">
+                                                            <div class="custom-file">
+                                                                <input type="file" class="custom-file-input" name="captain_license_front" id="captain_license_front" />
+                                                                <label class="custom-file-label" for="captain_license_front">Choose Captain License Front Image</label>
+                                                            </div>
+                                                        </div>
+                                                        <div class="col-6">
+                                                            <div class="custom-file">
+                                                                <input type="file" class="custom-file-input" name="captain_license_back" id="captain_license_back" />
+                                                                <label class="custom-file-label" for="captain_license_back">Choose Captain License Back Image</label>
+                                                            </div>
+                                                        </div>
+                                                    </div>
 
-                                        <div class="form-group">
-                                            <label for="captain_license_front">License Front</label>
-                                            <input type="file" name="captain_license_front" class="form-control">
-                                        </div>
-                                        
-                                        <div class="form-group">
-                                            <label for="captain_license_back">License Back</label>
-                                            <input type="file" name="captain_license_back" class="form-control">
-                                        </div>
 
-                                        <div class="form-group">
-                                            <label for="car_license_front">Car License Front</label>
-                                            <input type="file" name="car_license_front" class="form-control">
-                                        </div>
+                                                    <button type="submit" class="btn btn-success center">Upload</button>
+                                                </form>
+                                                <br>
+                                                <!-- Start Personal Media Table -->
+                                                <table class="table table-bordered">
+                                                    <thead>
+                                                        <tr>
+                                                            <th>Image</th>
+                                                            <th>Image Name</th>
+                                                            <th>Type</th>
+                                                            <th>Status</th>
+                                                            <th>ِActions</th>
+                                                        </tr>
+                                                    </thead>
+                                                    <tbody>
+                                                        @forelse ($data['captain']->profile->images as $image)
+                                                        <tr>
+                                                            <td>
+                                                                @php
+                                                                    $imagePath = asset('dashboard/img/' . str_replace(' ', '_', $data['captain']->name) . '_' . $data['captain']->profile->uuid . '/' . $image->type . '/' . $image->filename)
+                                                                @endphp
+                                                                <img src="{{ $imagePath }}" alt="{{ $image->photo_type }}" width="100">
+                                                                <td>{{ ucfirst(str_replace('_', ' ', $image->photo_type)) }}</td>
+                                                                <td>{{ $image->type }}</td>
+                                                                <td>{{ ucfirst(str_replace('_', ' ', $image->photo_status)) }}</td>
+                                                                <td>
+                                                                    <div class="mb-1 btn-group">
+                                                                        <button type="button" class="btn btn-default dropdown-toggle" data-toggle="dropdown" aria-haspopup="true" aria-expanded="false">{{ trans('general.processes') }}</button>
+                                                                        <div class="dropdown-menu">
+                                                                            {{--<a type="button" class="modal-effect btn btn-sm btn-primary dropdown-item" style="text-align: center !important"
+                                                                                data-toggle="modal" data-target="#edit{{$image->id}}" data-effect="effect-scale">
+                                                                                <span class="icon text-primary text-bold">
+                                                                                    <i class="fa fa-edit"></i>
+                                                                                    Edit
+                                                                                </span>
+                                                                            </a>--}}
+                                                                            <a type="button" class="modal-effect btn btn-sm btn-success dropdown-item" style="text-align: center !important"
+                                                                                data-toggle="modal" data-target="#active{{$image->id}}" data-effect="effect-scale">
+                                                                                <span class="icon text-success text-bold">
+                                                                                    <i class="fa fa-edit"></i>
+                                                                                    Active
+                                                                                </span>
+                                                                            </a>
+                                                                            <a type="button" class="modal-effect btn btn-sm btn-warning dropdown-item" style="text-align: center !important"
+                                                                                data-toggle="modal" data-target="#reject{{$image->id}}" data-effect="effect-scale">
+                                                                                <span class="icon text-warning text-bold">
+                                                                                    <i class="fa fa-edit"></i>
+                                                                                    Reject
+                                                                                </span>
+                                                                            </a>
+                                                                            {{--<a type="button" class="modal-effect btn btn-sm btn-danger dropdown-item" style="text-align: center !important"
+                                                                                data-toggle="modal" data-target="#delete{{$image->id}}" data-effect="effect-scale">
+                                                                                <span class="icon text-danger text-bold">
+                                                                                    <i class="fa fa-edit"></i>
+                                                                                    Delete
+                                                                                </span>
+                                                                            </a>--}}
+                                                                        </div>
+                                                                    </div>
+                                                                </td>
+                                                            </td>
+                                                        </tr>
+                                                        @if ($image->photo_status === 'rejected')
+                                                        <tr>
+                                                            <td colspan="5">
+                                                                <div>
+                                                                    <strong class="text-danger">Reject Reason:</strong>
+                                                                    {{ $image->reject_reson }}
+                                                                </div>
+                                                            </td>
+                                                        </tr>
+                                                        @endif
+                                                        @include('dashboard.admin.captains.btn.modals.profile.active')
+                                                        @include('dashboard.admin.captains.btn.modals.profile.reject')
+                                                        @empty
 
-                                        <div class="form-group">
-                                            <label for="car_license_back">Car License Back</label>
-                                            <input type="file" name="car_license_back" class="form-control">
-                                        </div>
-                                    
-                                        <button type="submit" class="btn btn-primary">Upload</button>
-                                    </form>
-                                        {{--  @php
-                                            $emptyFields = collect(['photo_id_before', 'photo_id_behind', 'photo_driving_before', 'photo_driving_behind', 'photo_criminal', 'photo_personal'])->filter(function ($field) use ($data) {
-                                                return empty($data['captain']->profile->{$field});
-                                            });
-                                        @endphp
-                                        @if ($emptyFields->isNotEmpty())
-                                            <div class="col-8 alert alert-danger alert-dismissible fade show" role="alert">
-                                                <strong>Important!</strong>
-                                                <!-- Upload Image -->
-                                                <div>
-                                                    @foreach ($emptyFields as $field)
-                                                        <p class="mb-0">{{ ucfirst(str_replace('_', ' ', $field)) }} Image is requrie.</p>
-                                                    @endforeach
-                                                </div>
-                                                <div class="p-1 col-12 d-flex justify-content-center">
-                                                    <a data-target="#upload{{$data['captain']->profile->id}}" data-toggle="modal"  data-effect="effect-scale" class="btn btn-success btn-sm" role="button">
-                                                        <i class="fa fa-plus"></i>
-                                                        Upload
-                                                    </a>
-                                                </div>
-
+                                                        @endforelse
+                                                    </tbody>
+                                                </table>
+                                                <!-- Start Personal Media Table -->
                                             </div>
-                                            @include('dashboard.admin.captains.btn.modals.profile.profile_media')
-                                        @endif
-                                    @endif --}}
+                                        </div>
+                                    </div>
+                                    <!-- End Personal Media Upload -->
+                                        
                                 </div>
                                 <!-- End Alert Div -->
                             </div>
-                            <!-- Start Personal Media Table -->
-                            {{-- <table class="table table-bordered">
-                                <thead>
-                                    <tr>
-                                        <th>Image</th>
-                                        <th>Image Name</th>
-                                        <th>Status</th>
-                                        <th>ِActions</th>
-                                    </tr>
-                                </thead>
-                                <tbody>
-                                    @forelse ($data['captain']->profile->profileStatus as $status)
-                                        <tr>
-                                            <td>
-                                                @php
-                                                    $imageName = $data['captain']->profile->{$status->name_photo};
-                                                    $imagePath = asset('dashboard/img/' .$data['captain']->profile->uuid . '_' . str_replace(' ', '_', $data['captain']->name) . '/' . $status->type_photo . '/' . $imageName)
-                                                @endphp
-                                                <img src="{{ $imagePath }}" alt="{{ $status->name_photo }}" width="100">
-                                            </td>
-                                            <td>{{ ucfirst(str_replace('_', ' ', $status->name_photo)) }}</td>
-                                            <td>{{ $status->status }}</td>
-                                            <td>
-                                                <form id="updateStatusForm" data-id="{{ $status->id }}" method="post" action="{{ route('captains.updateStatus', $status->id) }}">
-                                                    @csrf
-                                                    <input type="hidden" name="captain_id" value="{{ $data['captain']->profile->id }}">
-                                                    <input type="hidden" name="field_name" value="{{ $status->name_photo }}">
-                                                    <select id="statusSelect"  data-status-id="{{ $status->id }}" class="p-1 form-control statusSelect" name="status">
-                                                        <option selected>Choose Status</option>
-                                                        <option value="accept" {{ $status->status === 'accept' ? 'selected' : '' }}>Accept</option>
-                                                        <option value="not_active" {{ $status->status === 'not_active' ? 'selected' : '' }}>Not Active</option>
-                                                        <option value="not_active" {{ $status->status === 'reject' ? 'selected' : '' }}>reject</option>
-                                                    </select>
-                                                </form>
-                                                <form id="rejectForm" class="p-1 col-12 d-flex justify-content-center" method="post" action="{{ route('captains.updateStatus', $status->id) }}">
-                                                    @csrf
-                                                    <input type="hidden" name="captain_id" value="{{ $data['captain']->profile->id }}">
-                                                    <input type="hidden" name="field_name" value="{{ $status->name_photo }}">
-                                                    <input type="hidden" name="status" value="reject">
-                                                    <a class="p-1 btn btn-lg btn-danger" data-toggle="modal" data-target="#rejectModal{{$status->id}}">
-                                                        <i class="text-white fa fa-times-circle" aria-hidden="true"></i>
-                                                    </a>
-                                                </form>
-                                                @include('dashboard.admin.captains.btn.modals.profile.media_reject_message')
-                                            </td>
-                                            @if ($status->status === 'reject')
-                                                <td>
-                                                    Reject Reason: {!! $status->reject_message !!}
-                                                </td>
-                                            @endif
-                                        </tr>
-                                    @empty
-
-                                        <td colspan="4">
-                                            <span class="col-12 d-flex justify-content-center text-danger">
-                                                No Media Found For {{ $data['captain']->name }}
-                                            </span>
-                                        </td>
-                                    @endforelse
-                                </tbody>
-                            </table> --}}
-                            <!-- End Personal Media Table -->
-
                         </div>
                     </div>
                 </div>

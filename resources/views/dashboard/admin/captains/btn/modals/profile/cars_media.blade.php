@@ -10,7 +10,7 @@
                 </button>
             </div>
             <div class="modal-body">
-                <form method="post" action="{{ route('captains.uploadCarMedia') }}" enctype="multipart/form-data">
+                <form method="post" action="{{-- route('captains.uploadCarMedia') --}}" enctype="multipart/form-data">
                     @csrf
                     @foreach ($emptyFields as $field)
                     <div class="form-group">
