@@ -297,7 +297,7 @@ class CaptainProfileController extends Controller
                 $originalFileName = $request->file($field)->getClientOriginalName();
                 $filename = $field . '.' . $request->file($field)->getClientOriginalExtension();
                 $path = $userDirectory . '/' . $typeDirectory . '/';
-                $request->file($field)->storeAs($path, $filename, 'upload_image');
+                $request->file($field)->storeAs($path, $originalFileName, 'upload_image');
                 $image->photo_status = 'not_active';
                 $image->type = $type;
                 $image->filename = $originalFileName;
