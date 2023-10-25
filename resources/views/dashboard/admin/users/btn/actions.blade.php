@@ -34,6 +34,12 @@
                 {{ trans('general.Notification') }}
             </span>
         </button>
+        <a href="{{route('users.getOrders',['client_orders' => $admin->id])}}" class="modal-effect btn btn-sm btn-dark dropdown-item" style="text-align: center !important">
+            <span class="icon text-info text-dark">
+                <i class="fa fa-edit"></i>
+                My Trips
+            </span>
+        </a>
     </div>
 </div>
 

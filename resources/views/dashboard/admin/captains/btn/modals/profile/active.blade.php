@@ -11,6 +11,7 @@
             <form method="post" action="{{ route('captains.updateMediaStatus', $image->id) }}">
                 @csrf
                 <input type="hidden" name="photo_status" value="accept">
+                <input type="hidden" name="imageable_id" value="{{ $data['captain']->profile->captain_id }}">
                 <div class="modal-body mx-auto" style="display: flex; align-items: center; flex-direction: column;">
                     Are You Sure To Active this <span class="text-success">{{ ucfirst(str_replace('_', ' ', $image->photo_type)) }}</span> Photo
                     <div class="row">

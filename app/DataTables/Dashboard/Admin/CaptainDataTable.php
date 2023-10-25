@@ -37,7 +37,7 @@ class CaptainDataTable extends BaseDataTable {
 
     public function query(): QueryBuilder {
 
-        return Captain::query()->with('profile');
+        return Captain::query()->with(['profile', 'profile.orders']);
     }
 
     public function getColumns(): array {

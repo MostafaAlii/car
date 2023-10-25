@@ -19,6 +19,8 @@
                         <div class="clearfix"></div>
                     </a>
                     <ul id="setting_managment" class="collapse" data-parent="#sidebarnav">
+                        <li><a href="{{route('mainSettings.index')}}">Main Settings</a></li>
+                        <li><a href="{{route('sos.index')}}">Sos</a></li>
                         <a href="javascript:void(0);" data-toggle="collapse" data-target="#car_managment">
                             <div class="pull-left">
                                 <i class="ti-car"></i>
@@ -33,8 +35,50 @@
                             <li><a href="{{route('tripType.index')}}">Trip-Type</a></li>
                             <li><a href="{{route('carCategories.index')}}">Car-Categories</a></li>
                         </ul>
-                        <li><a href="{{route('mainSettings.index')}}">Main Settings</a></li>
-                        <li><a href="{{route('sos.index')}}">Sos</a></li>
+                    </ul>
+                    <ul id="setting_managment" class="collapse" data-parent="#sidebarnav">
+                        <a href="javascript:void(0);" data-toggle="collapse" data-target="#general_managment">
+                            <div class="pull-left">
+                                <i class="ti-car"></i>
+                                <span class="right-nav-text">General Settings</span></div>
+                            <div class="pull-right"><i class="ti-plus"></i></div>
+                            <div class="clearfix"></div>
+                        </a>
+                        <ul id="general_managment" class="collapse" data-parent="#sidebarnavcar">
+                            <li><a href="{{route('countries.index')}}">Countries</a></li>
+                            <li><a href="{{route('states.index')}}">States</a></li>
+                            <li><a href="{{route('cities.index')}}">Cities</a></li>
+                        </ul>
+                        <a href="javascript:void(0);" data-toggle="collapse" data-target="#section_managment">
+                            <div class="pull-left">
+                                <i class="ti-car"></i>
+                                <span class="right-nav-text">Sections</span></div>
+                            <div class="pull-right"><i class="ti-plus"></i></div>
+                            <div class="clearfix"></div>
+                        </a>
+                        <ul id="section_managment" class="collapse" data-parent="#sidebarnavcar">
+                            <li><a href="{{route('sections.index')}}">Sections</a></li>
+                        </ul>
+                        <a href="javascript:void(0);" data-toggle="collapse" data-target="#discount_managment">
+                            <div class="pull-left">
+                                <i class="ti-car"></i>
+                                <span class="right-nav-text">Discount</span></div>
+                            <div class="pull-right"><i class="ti-plus"></i></div>
+                            <div class="clearfix"></div>
+                        </a>
+                        <ul id="discount_managment" class="collapse" data-parent="#sidebarnavcar">
+                            <li><a href="{{route('discounts.index')}}">Discount</a></li>
+                        </ul>
+                        <a href="javascript:void(0);" data-toggle="collapse" data-target="#package_managment">
+                            <div class="pull-left">
+                                <i class="ti-car"></i>
+                                <span class="right-nav-text">Packages</span></div>
+                            <div class="pull-right"><i class="ti-plus"></i></div>
+                            <div class="clearfix"></div>
+                        </a>
+                        <ul id="package_managment" class="collapse" data-parent="#sidebarnavcar">
+                            <li><a href="{{route('packages.index')}}">Package</a></li>
+                        </ul>
                     </ul>
                 </li>
                 <!-- End Admin Managment Menu-->
@@ -134,13 +178,12 @@
                         <div class="clearfix"></div>
                     </a>
                     <ul id="orders" class="collapse" data-parent="#sidebarnav">
-                        <li><a href="">All orders</a></li>
-                        <li><a href="">list orders</a></li>
-                        <li><a href="">orders waiting</a></li>
-                        <li><a href="">orders pending</a></li>
-                        <li><a href="">orders cancel</a></li>
-                        <li><a href="">orders accepted</a></li>
-                        <li><a href="">orders done</a></li>
+                        <li><a href="{{route('orders.index')}}">All orders</a></li>
+                        <li><a href="{{ route('orders.index', ['status' => 'waiting']) }}">orders waiting</a></li>
+                        <li><a href="{{ route('orders.index', ['status' => 'pending']) }}">orders pending</a></li>
+                        <li><a href="{{ route('orders.index', ['status' => 'cancel']) }}">orders cancel</a></li>
+                        <li><a href="{{ route('orders.index', ['status' => 'accepted']) }}">orders accepted</a></li>
+                        <li><a href="{{ route('orders.index', ['status' => 'done']) }}">orders done</a></li>
                     </ul>
                 </li>
                 <!-- End Admin Managment Menu-->

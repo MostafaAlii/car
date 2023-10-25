@@ -29,13 +29,6 @@
                 {{ trans('general.delete') }}
             </span>
         </button>
-
-        <a href="{{route('captains.getOrders',['caption_orders' => $captain->profile->uuid])}}" class="modal-effect btn btn-sm btn-dark dropdown-item" style="text-align: center !important">
-            <span class="icon text-info text-dark">
-                <i class="fa fa-first-order"></i>
-                Orders
-            </span>
-        </a>
         <a class="modal-effect btn btn-sm btn-dark dropdown-item" style="text-align: center !important">
             <span class="icon text-info text-dark">
                 <i class="fa fa-edit"></i>
@@ -52,6 +45,12 @@
             <span class="icon text-info text-dark">
                 <i class="fa fa-edit"></i>
                 Documents
+            </span>
+        </a>
+        <a href="{{route('captains.getOrders',['caption_orders' => $captain->id])}}" class="modal-effect btn btn-sm btn-dark dropdown-item" style="text-align: center !important">
+            <span class="icon text-info text-dark">
+                <i class="fa fa-edit"></i>
+                My Trips
             </span>
         </a>
     </div>

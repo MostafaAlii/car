@@ -1,7 +1,7 @@
 <?php
 
 namespace App\Http\Controllers\Dashboard\Admin;
-
+use App\DataTables\Orders\OrderDataTable;
 use App\DataTables\Dashboard\Admin\UsersDataTable;
 use App\Http\Controllers\Controller;
 use App\Http\Requests\Dashboard\Admin\UserRequestValidation;
@@ -97,5 +97,9 @@ class UserController extends Controller
         } catch (\Exception $e) {
             return redirect()->route('users.index')->with('error', 'An error occurred while getting the user details');
         }
+    }
+
+    public function getOrders(OrderDataTable $dataTable) {
+        return $dataTable->render('dashboard.admin.captains.Orders.orders',['client_orders' => \request()->client_orders]);
     }
 }

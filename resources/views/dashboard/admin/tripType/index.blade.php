@@ -28,10 +28,6 @@
     <div class="col-md-12 mb-30">
         <div class="card card-statistics h-100">
             <div class="card-body">
-                <a data-target="#create{{$data['title']}}" data-toggle="modal"  data-effect="effect-scale" class="btn btn-success btn-sm" role="button">
-                    <i class="fa fa-plus"></i>
-                    Add New {{$data['title']}}
-                </a>
                 <br><br>
                 <!--begin::Table-->
                 {!! $dataTable->table([
@@ -41,7 +37,6 @@
                 ]) !!}
                 <!--end::Table-->
             </div>
-            @include('dashboard.admin.tripType.btn.modals.create')
         </div>
     </div>
 </div>

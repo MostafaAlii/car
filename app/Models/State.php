@@ -15,18 +15,27 @@ class State extends Model
         'status',
     ];
 
-    public function cities()
-    {
+    public function cities() {
         return $this->hasMany(City::class, 'state_id');
     }
 
-    public function status()
-    {
+    public function status() {
         return $this->status  ? 'Active' : 'NO Active';
     }
 
-    public function country()
-    {
+    public function country() {
         return $this->belongsTo(Country::class, 'country_id');
+    }
+
+    protected static function boot() {
+        parent::boot();
+        static::updating(function ($state) {
+            $attributes = $state->getDirty();
+            $state->cities->each(function ($city) use ($attributes) {
+                $city->update([
+                    'status' => $attributes['status'],
+                ]);
+            });
+        });
     }
 }

@@ -31,5 +31,8 @@ return [
         'region' => env('AWS_DEFAULT_REGION', 'us-east-1'),
     ],
 
+    'firebase_chat' => [
+        'chat_base' => 'https://firestore.googleapis.com/v1/projects/silver-triangle-client/databases/(default)/documents/messages/',
+    ],
 
 ];

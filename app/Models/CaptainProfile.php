@@ -2,7 +2,7 @@
 
 namespace App\Models;
 
-use Illuminate\Database\Eloquent\Relations\BelongsTo;
+use Illuminate\Database\Eloquent\Relations\{BelongsTo, HasMany};
 
 class CaptainProfile extends BaseModel
 {
@@ -29,12 +29,16 @@ class CaptainProfile extends BaseModel
 
     public function images()
     {
-        return $this->hasMany(Image::class, 'imageable_id');
+        return $this->hasMany(Image::class, 'imageable');
     }
 
     public function captainWallet()
     {
         return $this->hasMany(Wallet::class,'captain_id')->sum('amount');
+    }
+
+    public function orders(): HasMany {
+        return $this->hasMany(Order::class,'captain_id');
     }
 
 }

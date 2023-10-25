@@ -83,6 +83,7 @@ if (!function_exists('sendNotificationCaptain')) {
     function sendNotificationCaptain($fcm, $body, $title, $store = false)
     {
         $captain = Captain::where('fcm_token', $fcm)->first();
+      
         $url = Http::withHeaders([
             "Content-Type" => "application/json",
             "Authorization" => "key=AAAA5dxbfSs:APA91bH6P3jOhcvNzYL9u-9n9J8Zm_PhOmSDhJu-IfPiH7ofh7IWf8nRl-xNd_TMlIB_0jDuGu4swGYk3MYxZ2B_NXGbO8NPZJcL0d4UtDRqHnDGIcoSqDlkGYp8RPazQdnLhZWV3T4u"
@@ -93,7 +94,6 @@ if (!function_exists('sendNotificationCaptain')) {
                 "title" => $title,
             ]
         ]);
-
         if ($url->ok()) {
             if ($store === false) {
                 Notification::create([
@@ -102,7 +102,6 @@ if (!function_exists('sendNotificationCaptain')) {
                     "notifications_title" => $title,
                     "notifications_body" => $body,
                 ]);
-
                 return true;
             }
 

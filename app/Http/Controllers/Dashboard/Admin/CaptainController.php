@@ -2,7 +2,7 @@
 namespace App\Http\Controllers\Dashboard\Admin;
 use App\DataTables\Orders\OrderDataTable;
 use Illuminate\Http\Request;
-use App\Models\{CaptainProfile,CarsCaptionStatus,Captain,Image};
+use App\Models\{CaptainProfile,CarsCaptionStatus,Captain,Image, Order};
 use App\Http\Controllers\Controller;
 use App\DataTables\Dashboard\Admin\CaptainDataTable;
 use App\Http\Requests\Dashboard\Admin\CaptionRequestValidation;
@@ -10,8 +10,7 @@ use App\Services\Dashboard\{Admins\CaptainService, General\GeneralService};
 
 class CaptainController extends Controller {
 
-    public function __construct(protected CaptainDataTable $dataTable, protected CaptainService $captainService, protected GeneralService $generalService)
-    {
+    public function __construct(protected CaptainDataTable $dataTable, protected CaptainService $captainService, protected GeneralService $generalService) {
         $this->dataTable = $dataTable;
         $this->captainService = $captainService;
         $this->generalService = $generalService;
@@ -132,6 +131,7 @@ class CaptainController extends Controller {
     }
 
     public function updatePersonalMediaStatus(Request $request, $id) {
+    
         try {
             $columns = [
                 'personal_avatar' => [
@@ -160,10 +160,28 @@ class CaptainController extends Controller {
                 ],
             ];
 
+
+            $messages = [
+                'Reject' => [
+                    'ar'=> 'مرفوضه',
+                    'en'=> 'Reject',
+                ],
+                'Accept' => [
+                    'ar'=> 'مقبول',
+                    'en'=> 'Accept',
+                ],
+            ];
+
+
             $image = Image::find($id);
-            $captainId = $image->imageable_id;
-            $captain = Captain::findOrfail($captainId);
-            $specificName = array_key_exists($image->photo_type,$columns) ? $columns[$image->photo_type] : null;
+      
+            
+        
+            $captain = Captain::findOrfail($request->imageable_id);
+            $accept = array_key_exists('Accept',$messages) ? $messages['Accept']['ar'] : null;
+            $reject = array_key_exists('Reject',$messages) ? $messages['Reject']['ar'] : null;
+          
+            $specificName = array_key_exists($image->photo_type,$columns) ? $columns[$image->photo_type]['ar'] : null;
             if (!$image) 
                 return redirect()->back()->with('error', 'Image not found');
             $updateData = [];
@@ -174,8 +192,8 @@ class CaptainController extends Controller {
                 $updateData['reject_reson'] = $request->input('reject_reson');
             
             $image->update($updateData);
-            $body = ($request->input('photo_status') === 'accept') ? 'Good Your ' . $specificName . ' Successfully' : 'Sorry this image ' .$specificName . 'was rejected to ' . ucfirst($image->reject_reson);
-            $title = ($request->input('photo_status') === 'accept') ? 'Accept ' . $specificName : 'Reject ' . $specificName;
+            $body = ($request->input('photo_status') === 'accept') ? 'Good Your ' . $specificName . ' Successfully' : 'Sorry this image ' .$specificName;
+            $title = ($request->input('photo_status') === 'accept') ? $accept . ' ' .$specificName :  ' ' .$reject .' ' . $specificName;
             sendNotificationCaptain($captain->fcm_token,$body, $title, false);
             return redirect()->back()->with('success', 'Image ' . ucfirst(str_replace('_', ' ', $image->photo_type)) . ' updated status successfully');
         } catch (\Exception $e) {

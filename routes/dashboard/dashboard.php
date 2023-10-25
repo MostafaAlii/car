@@ -1,6 +1,7 @@
 <?php
 
 use App\Http\Controllers\Dashboard\Admin;
+use App\Http\Controllers\Dashboard\General;
 use Illuminate\Support\Facades\Route;
 use Mcamara\LaravelLocalization\Facades\LaravelLocalization;
 
@@ -15,8 +16,10 @@ Route::group(
         Route::resource('admins', Admin\AdminController::class);
         Route::post('admins/{adminId}/update-password', [Admin\AdminController::class, 'updatePassword'])->name('admins.update-password');
 
+
         // users ::
         Route::resource('users', Admin\UserController::class);
+        Route::get('users/Orders/get', [Admin\UserController::class, 'getOrders'])->name('users.getOrders');
         Route::post('users/{adminId}/update-password', [Admin\UserController::class, 'updatePassword'])->name('users.update-password');
         Route::post('users/sendNotification/all', [Admin\UserController::class, 'sendNotificationAll'])->name('users.sendNotificationAll');
         Route::post('users/sendNotification', [Admin\UserController::class, 'sendNotification'])->name('users.sendNotification');
@@ -46,6 +49,18 @@ Route::group(
         Route::post('captains/sendNotification/All', [Admin\CaptainController::class, 'sendNotificationAll'])->name('captains.sendNotificationAll');
         Route::post('captains/sendNotification', [Admin\CaptainController::class, 'sendNotification'])->name('captains.sendNotification');
 
+        // Country ::
+        Route::resource('countries', General\CountryController::class);
+        Route::post('countries/{countryId}/change-status', [General\CountryController::class, 'changeStatusCountry'])->name('country.changeStatusCountry');
+        // State ::
+        Route::resource('states', General\StateController::class);
+        Route::post('states/{stateId}/change-status', [General\StateController::class, 'changeStatusState'])->name('state.changeStatusState');
+        // Cities ::
+        Route::resource('cities', General\CityController::class);
+        Route::post('cities/{cityId}/change-status', [General\CityController::class, 'changeStatusCity'])->name('city.changeStatusCity');
+        // Sections ::
+        Route::resource('sections', General\SectionController::class);
+        Route::post('sections/{sectionId}/update-status', [General\SectionController::class, 'updateStatus'])->name('sections.update-status');
         // Sos ::
         Route::resource('sos', Admin\SosController::class);
         Route::post('sos/{sosId}/update-status', [Admin\SosController::class, 'updateStatus'])->name('sos.update-status');
@@ -69,5 +84,21 @@ Route::group(
             Route::get('/', 'index')->name('index');
             Route::post('update', 'update')->name('update');
         });
+        // Orders ::
+        Route::controller(Admin\OrderController::class)->prefix('orders')->as('orders.')->group(function () {
+            Route::get('/', 'index')->name('index');
+            Route::get('/waiting', 'index')->name('waiting');
+            Route::get('/pending', 'index')->name('pending');
+            Route::get('/cancel', 'cancel')->name('cancel');
+            Route::get('/accepted', 'accepted')->name('accepted');
+            Route::get('/done', 'done')->name('done');
+            Route::get('/{order_code}', 'show')->name('show');
+        });
+        // Discount ::
+        Route::resource('discounts', General\DiscountController::class);
+        Route::post('discounts/{discountId}/update-status', [General\DiscountController::class, 'updateStatus'])->name('discounts.update-status');
+        // Packages ::
+        Route::resource('packages', General\PackageController::class);
+        Route::post('packages/{packageId}/update-status', [General\PackageController::class, 'updateStatus'])->name('packages.update-status');
     });
 });

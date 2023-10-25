@@ -9,10 +9,13 @@ use Illuminate\Database\Eloquent\Factories\HasFactory;
 class Image extends Model {
     use HasFactory;
     protected $fillable = [
+          'filename',
+           'type',
         'photo_status',
-        'filename',
-        'type',
+        'photo_type',
         'reject_reson',
+        'imageable_type',
+        'imageable_id',
 
     ];
     public $timestamps = false;

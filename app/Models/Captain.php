@@ -3,7 +3,7 @@ namespace App\Models;
 use Illuminate\Database\Eloquent\Factories\HasFactory;
 use Illuminate\Foundation\Auth\User as Authenticatable;
 use Illuminate\Notifications\Notifiable;
-use Illuminate\Database\Eloquent\Relations\{HasOne, BelongsTo};
+use Illuminate\Database\Eloquent\Relations\{HasOne, BelongsTo, HasMany};
 use Tymon\JWTAuth\Contracts\JWTSubject;
 use Laravel\Sanctum\HasApiTokens;
 class Captain extends Authenticatable implements JWTSubject {
@@ -69,5 +69,9 @@ class Captain extends Authenticatable implements JWTSubject {
 
     public function images() {
         return $this->morphMany(Image::class, 'imageable');
+    }
+
+    public function orders(): HasMany {
+        return $this->hasMany(Order::class,'captain_id');
     }
 }

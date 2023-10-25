@@ -16,17 +16,9 @@
                 Update Status
             </span>
         </button>
-        
-        <button type="button" class="modal-effect btn btn-sm btn-danger dropdown-item" style="text-align: center !important" data-toggle="modal" data-target="#delete{{$tripType->id}}" data-effect="effect-scale">
-            <span class="icon text-danger text-bold">
-                <i class="fa fa-trash"></i>
-                {{ trans('general.delete') }}
-            </span>
-        </button>
     </div>
 </div>
 
 
 @include('dashboard.admin.tripType.btn.modals.edit')
 @include('dashboard.admin.tripType.btn.modals.updateStatus')
-@include('dashboard.admin.tripType.btn.modals.destroy')

@@ -11,13 +11,16 @@ use App\Models\Traits\Api\{ApiResponseTrait, ImageUploadTrait};
 use App\Models\{Captain, CaptainProfile, CarsCaption, CarsCaptionStatus};
 use App\Http\Resources\Drivers\{CarsCaptionResources, CaptainProfileResources, CarsCaptionStatusResources};
 
-class CaptainProfileController extends Controller {
+class CaptainProfileController extends Controller
+{
     use ApiResponseTrait, ImageUploadTrait;
-    public function __construct(protected CaptainService $captainService) {
+    public function __construct(protected CaptainService $captainService)
+    {
         $this->captainService = $captainService;
     }
 
-    public function index() {
+    public function index()
+    {
         try {
             $data = CaptainProfile::where('captain_id', auth('captain-api')->id())->first();
             return $this->successResponse(new CaptainProfileResources($data), 'data Return Successfully');
@@ -29,30 +32,25 @@ class CaptainProfileController extends Controller {
     public function uploadProfile(Request $request) {
         try {
             $user = auth('captain-api')->user();
-            if (!$user)
+
+            if (!$user) {
                 return $this->errorResponse('Sorry, you are not allowed', 403);
+            }
+
             $numberPersonal = $request->input('number_personal');
-            if ($numberPersonal)
+            if ($numberPersonal) {
                 $user->profile->update(['number_personal' => $numberPersonal]);
+            }
+
             $carData = [
                 'captain_id' => $user->id,
                 'number_car' => $request->input('number_car'),
                 'color_car' => $request->input('color_car'),
                 'year_car' => $request->input('year_car'),
             ];
-            if ($request->input('car_make_id')) {
-                $carData['car_make_id'] = $request->input('car_make_id');
-            }
-    
-            if ($request->input('car_model_id')) {
-                $carData['car_model_id'] = $request->input('car_model_id');
-            }
-    
-            if ($request->input('car_type_id')) {
-                $carData['car_type_id'] = $request->input('car_type_id');
-            }
-            CarsCaption::updateOrInsert(['captain_id' => $user->id,],$carData);
-    
+
+            CarsCaption::updateOrInsert(['captain_id' => $user->id], $carData);
+
             $allowedPersonalImageTypes = [
                 'personal_avatar',
                 'id_photo_front',
@@ -71,7 +69,7 @@ class CaptainProfileController extends Controller {
                 'car_inside',
             ];
             $imageType = $request->input('type');
-    
+
             if ($imageType === 'personal') {
                 foreach ($allowedPersonalImageTypes as $imageField) {
                     if ($request->hasFile($imageField)) {
@@ -87,78 +85,83 @@ class CaptainProfileController extends Controller {
             } else {
                 return $this->errorResponse('Invalid image type', 400);
             }
-    
+
             return $this->successResponse('Upload Profile Media Successfully for ' . $user->name);
         } catch (\Exception $e) {
             return $this->errorResponse('An error occurred while uploading the profile media: ' . $e->getMessage());
         }
     }
-    
-    public function updateUploadProfile(Request $request) {
-        try {
-            $user = auth('captain-api')->user();
-            if (!$user)
-                return $this->errorResponse('Sorry, you are not allowed', 403);
-            $imageType = $request->input('type');
-            $captainFolderName = str_replace(' ', '_', $user->name) . '_' . $user->captainProfile->uuid;
-            if (!in_array($imageType, ['personal', 'car'])) {
-                return $this->errorResponse('Invalid image type', 400);
-            }
-            $userPath = public_path('dashboard/img/' . $captainFolderName . DIRECTORY_SEPARATOR);
-            $typePath = $imageType . DIRECTORY_SEPARATOR;
-            $imageTypes = [
-                'personal_avatar',
-                'id_photo_front',
-                'id_photo_back',
-                'criminal_record',
-                'captain_license_front',
-                'captain_license_back',
-                'car_license_front',
-                'car_license_back',
-                'car_front',
-                'car_back',
-                'car_right',
-                'car_left',
-                'car_inside',
-            ];
-            foreach ($imageTypes as $imageType) {
-                if ($request->hasFile($imageType)) {
-                    $oldImage = Image::where([
-                        'imageable_type' => 'App\Models\Captain',
-                        'imageable_id' => $user->id,
-                        'photo_type' => $imageType,
-                    ])->first();
-                    
-                    if ($oldImage) {
-                        $filePath = $userPath . $typePath . $oldImage->filename;
-                        if (file_exists($filePath)) {
-                            unlink($filePath);
-                        }
-                        $oldImage->delete();
-                    }
-    
-                    $newImage = $request->file($imageType);
-                    $newFilename = $imageType . '.' . $newImage->getClientOriginalExtension();
-                    $newPath = $userPath . $typePath;
-                    $newImage->move($newPath, $newFilename);
-    
-                    $image = new Image();
-                    $image->photo_type = $imageType;
-                    $image->imageable_type = 'App\Models\Captain';
-                    $image->filename = $newFilename;
-                    $image->imageable_id = $user->id;
-                    $image->photo_status = 'not_active';
-                    $image->type = $request->input('type');
-                    $image->save();
-                }
-            } 
-            return $this->successResponse('Profile images updated successfully');
-        } catch (\Exception $e) {
-            return $this->errorResponse('An error occurred while updating profile images: ' . $e->getMessage());
-        }
-    }
 
-    public function getRejectMedia(Request $request) {
+
+    public function updateUploadProfile(Request $request) {
+
+        $user = auth('captain-api')->user();
+        if (!$user) {
+            return $this->errorResponse('Sorry, you are not allowed', 403);
+        }
+
+        $imageType = $request->input('type');
+        $captainFolderName = str_replace(' ', '_', $user->name) . '_' . $user->captainProfile->uuid;
+        if (!in_array($imageType, ['personal', 'car'])) {
+            return $this->errorResponse('Invalid image type', 400);
+        }
+
+        $path_image = asset('dashboard/img/' . $captainFolderName . '/' . $request->input('type'));
+
+        $imageTypes = [
+            'personal_avatar',
+            'id_photo_front',
+            'id_photo_back',
+            'criminal_record',
+            'captain_license_front',
+            'captain_license_back',
+            'car_license_front',
+            'car_license_back',
+            'car_front',
+            'car_back',
+            'car_right',
+            'car_left',
+            'car_inside',
+        ];
+
+        foreach ($imageTypes as $imageType) {
+            $oldImage = Image::where([
+                'imageable_type' => 'App\Models\Captain',
+                'imageable_id' => $user->id,
+                'photo_type' => $imageType,
+            ])->first();
+
+            if ($oldImage) {
+                $filePath = $path_image . '/' . $oldImage->filename;
+
+                if (file_exists($filePath)) {
+                    unlink($filePath);
+                }
+                $oldImage->delete();
+            }
+
+            if ($request->hasFile($imageType)) {
+                $newImage = $request->file($imageType);
+                $imageTypePhoto = $imageType . '.' . $newImage->getClientOriginalExtension();
+
+                $newImage->move($path_image, $imageTypePhoto);
+
+                $image = new Image();
+                $image->photo_type = $imageType;
+                $image->imageable_type = 'App\Models\Captain';
+                $image->filename = $imageTypePhoto;
+                $image->imageable_id = $user->id;
+                $image->photo_status = 'not_active';
+                $image->type = $request->input('type');
+                $image->save();
+            }
+        }
+
+        return $this->successResponse('Profile images updated successfully');
+
+    }
+    public function getRejectMedia(Request $request)
+    {
         try {
             $user = auth('captain-api')->user();
             if (!$user) {
@@ -171,32 +174,33 @@ class CaptainProfileController extends Controller {
                 'photo_status' => 'rejected',
             ])->get();
             $mediaData = [];
-    
+
             foreach ($rejectedImages as $image) {
                 $imageType = $image->type;
                 $imageTypeFolder = $imageType === 'personal' ? 'personal' : 'car';
-                
+
                 $mediaData[] = [
                     'photo_status' => $image?->photo_status,
                     'photo_type' => $image?->photo_type,
                     'reject_reason' => $image?->reject_reson,
                     'type' => $image?->type,
-                    'image_path' => asset('dashboard/img/' . $captainFolderName . DIRECTORY_SEPARATOR . $imageTypeFolder . DIRECTORY_SEPARATOR . $image->filename),
+                    'image_path' => asset('dashboard/img/' . $captainFolderName . '/' . $imageTypeFolder . '/' . $image->filename),
                 ];
             }
-    
+
             $responseData = [
                 'message' => 'Rejected media retrieved successfully',
                 'data' => $mediaData,
             ];
-    
+
             return response()->json($responseData);
-        } catch(\Exception $e){
+        } catch (\Exception $e) {
             return $this->errorResponse('An error occurred while retrieving rejected media: ' . $e->getMessage());
         }
     }
 
-    public function allMedia(Request $request) {
+    public function allMedia(Request $request)
+    {
         try {
             $user = auth('captain-api')->user();
             if (!$user) {
@@ -216,7 +220,7 @@ class CaptainProfileController extends Controller {
                     'photo_status' => $image->photo_status,
                     'photo_type' => $image->photo_type,
                     'reject_reason' => $image->reject_reson,
-                    'image_path' => asset('dashboard/img/' . $captainFolderName . DIRECTORY_SEPARATOR . $imageTypeFolder . DIRECTORY_SEPARATOR . $image->filename),
+                    'image_path' => asset('dashboard/img/' . $captainFolderName . '/' . $imageTypeFolder . '/' . $image->filename),
                 ];
             }
             $responseData = [
@@ -227,15 +231,15 @@ class CaptainProfileController extends Controller {
         } catch (\Exception $e) {
             return $this->errorResponse('An error occurred while retrieving media: ' . $e->getMessage());
         }
-    } 
-    
+    }
+
     public function checkImg(Request $request) {
         try {
             $user = auth('captain-api')->user();
             $captainFolderName = str_replace(' ', '_', $user->name) . '_' . $user->captainProfile->uuid;
-            if (!$user) 
+            if (!$user)
                 return $this->errorResponse('Sorry, you are not allowed', 403);
-    
+
             $requiredPersonalFields = [
                 'personal_avatar',
                 'id_photo_front',
@@ -244,7 +248,7 @@ class CaptainProfileController extends Controller {
                 'captain_license_front',
                 'captain_license_back',
             ];
-    
+
             $requiredCarFields = [
                 'car_license_front',
                 'car_license_back',
@@ -254,56 +258,58 @@ class CaptainProfileController extends Controller {
                 'car_left',
                 'car_inside',
             ];
-    
+
             $matchingPersonalImages = Image::where([
                 'imageable_type' => 'App\Models\Captain',
                 'imageable_id' => $user->id,
             ])->whereIn('photo_type', $requiredPersonalFields)->get();
-    
+
             $matchingCarImages = Image::where([
                 'imageable_type' => 'App\Models\Captain',
                 'imageable_id' => $user->id,
             ])->whereIn('photo_type', $requiredCarFields)->get();
-    
+
             $personalFieldsComplete = count($matchingPersonalImages) === count($requiredPersonalFields);
             $carFieldsComplete = count($matchingCarImages) === count($requiredCarFields);
-    
+
             $response = [
                 'captain_personal' => $personalFieldsComplete,
                 'captain_car' => $carFieldsComplete,
             ];
-    
+
             return response()->json($response);
         } catch (\Exception $e) {
             return $this->errorResponse('An error occurred while checking media: ' . $e->getMessage());
         }
     }
-    
     private function storeImage(Request $request, $field, $type, $imageable) {
         $image = new Image();
         $image->photo_type = $field;
         $image->imageable_type = 'App\Models\Captain';
         $imageable = json_decode($imageable);
-        
+
         if ($request->file($field)->isValid()) {
             $captainProfile = CaptainProfile::whereCaptainId($imageable->id)->select('uuid')->first();
             if ($captainProfile) {
                 $nameWithoutSpaces = str_replace(' ', '_', $imageable->name);
                 $userDirectory = $nameWithoutSpaces . '_' . $captainProfile->uuid;
                 $typeDirectory = $type;
+                $originalFileName = $request->file($field)->getClientOriginalName();
                 $filename = $field . '.' . $request->file($field)->getClientOriginalExtension();
-                $path = $userDirectory . DIRECTORY_SEPARATOR . $typeDirectory . DIRECTORY_SEPARATOR;
-                $request->file($field)->storeAs($path, $filename, 'upload_image');
+                $path = $userDirectory . '/' . $typeDirectory . '/';
+                $request->file($field)->storeAs($path, $originalFileName, 'upload_image');
                 $image->photo_status = 'not_active';
                 $image->type = $type;
-                $image->filename = $filename;
+                $image->filename = $originalFileName;
+                //$image->filename = $filename;
                 $image->imageable_id = $imageable->id;
                 $image->save();
             }
         }
     }
-    
-    public function uploadCarPhoto(Request $request) {
+
+    public function uploadCarPhoto(Request $request)
+    {
         try {
             $user = auth('captain-api')->user();
             if (!$user)
@@ -334,7 +340,8 @@ class CaptainProfileController extends Controller {
         }
     }
 
-    public function getCar() {
+    public function getCar()
+    {
         try {
             $data = CarsCaption::where('captain_id', auth('captain-api')->id())->first();
             if (isset($data)) {
@@ -348,7 +355,8 @@ class CaptainProfileController extends Controller {
 
     }
 
-    public function getCaptainPhotosWithStatus() {
+    public function getCaptainPhotosWithStatus()
+    {
         $captain = CaptainProfile::where('captain_id', auth('captain-api')->id())->first();
         if (!$captain)
             return $this->errorResponse('Captain profile not found', 404);
@@ -376,13 +384,14 @@ class CaptainProfileController extends Controller {
                 ];
 
             } else {
-                return $this->errorResponse('No media file status found for ' . $column , 404);
+                return $this->errorResponse('No media file status found for ' . $column, 404);
             }
         }
         return $this->successResponse($response, 'Profile Media files status retrieved successfully for ' . $captain->owner->name);
     }
 
-    public function getCaptainCarsPhotosWithStatus() {
+    public function getCaptainCarsPhotosWithStatus()
+    {
         $captain = CarsCaption::with('captain')->where('captain_id', auth('captain-api')->id())->first();
         if (!$captain)
             return $this->errorResponse('Captain cars media not found', 404);
@@ -411,13 +420,14 @@ class CaptainProfileController extends Controller {
                 ];
 
             } else {
-                return $this->errorResponse('No media file status found for ' . $column , 404);
+                return $this->errorResponse('No media file status found for ' . $column, 404);
             }
         }
         return $this->successResponse($response, 'Car Media files status retrieved successfully for ' . $captain->captain->name);
     }
 
-    public function checkUploadfilesOrNot() {
+    public function checkUploadfilesOrNot()
+    {
         $captain = auth('captain-api')->user();
         if (!$captain)
             return $this->errorResponse('Sorry, you are not allowed', 403);

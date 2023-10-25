@@ -97,7 +97,8 @@
                                                         </tr>
                                                     </thead>
                                                     <tbody>
-                                                        @forelse ($data['captain']->profile->images as $image)
+                                                    
+                                                        @forelse ($data['captain']['images'] as $image)
                                                         <tr>
                                                             <td>
                                                                 @php
